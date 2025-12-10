@@ -1,0 +1,443 @@
+{
+	"info": {
+		"name": "Admissions Flow API",
+		"description": "API collection for the Admissions Flow System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						},
+						"description": "Creates a new user in the system. Returns the user ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current Position",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}/current",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}", "current"]
+						},
+						"description": "Gets the current step and task for a user, including progress information."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}", "status"]
+						},
+						"description": "Checks whether a user is accepted, rejected, or still in progress."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Flow",
+			"item": [
+				{
+					"name": "Get Flow Structure",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/flow",
+							"host": ["{{baseUrl}}"],
+							"path": ["flow"]
+						},
+						"description": "Retrieves the complete flow structure including all steps and tasks."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Complete Task - Personal Details",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"personal_details\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"email\": \"user@example.com\",\n    \"timestamp\": \"2025-12-10T12:00:00Z\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Completes the Personal Details Form task. Required fields: user_id, first_name, last_name, email, timestamp"
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - IQ Test (Passing)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"iq_test\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"test_id\": \"iq-1\",\n    \"score\": 85,\n    \"timestamp\": \"2025-12-10T12:00:00Z\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Completes the IQ Test task with a passing score (>75). Required fields: user_id, test_id, score, timestamp"
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - IQ Test (Failing)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"iq_test\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"test_id\": \"iq-1\",\n    \"score\": 70,\n    \"timestamp\": \"2025-12-10T12:00:00Z\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Completes the IQ Test task with a failing score (<=75). This will result in rejected status."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - Schedule Interview",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"schedule_interview\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"interview_date\": \"2025-12-15T10:00:00Z\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Schedules an interview. Required fields: user_id, interview_date. Must be completed before 'Perform Interview'."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - Perform Interview (Passed)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"perform_interview\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"interview_date\": \"2025-12-15T10:00:00Z\",\n    \"interviewer_id\": \"int-1\",\n    \"decision\": \"passed_interview\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Completes the interview with a passed decision. Required fields: user_id, interview_date, interviewer_id, decision. Must complete 'Schedule Interview' first."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - Perform Interview (Failed)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"perform_interview\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"interview_date\": \"2025-12-15T10:00:00Z\",\n    \"interviewer_id\": \"int-1\",\n    \"decision\": \"failed_interview\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Completes the interview with a failed decision. This will result in rejected status."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - Upload Identification Document",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"upload_identification_document\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"passport_number\": \"P123456\",\n    \"timestamp\": \"2025-12-10T12:00:00Z\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Uploads identification document. Required fields: user_id, passport_number, timestamp. Must be completed before 'Sign Contract'."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - Sign Contract",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"sign_contract\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"timestamp\": \"2025-12-10T12:00:00Z\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Signs the contract. Required fields: user_id, timestamp. Must complete 'Upload Identification Document' first."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - Payment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"payment\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"payment_id\": \"pay-12345\",\n    \"timestamp\": \"2025-12-10T12:00:00Z\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Completes payment. Required fields: user_id, payment_id, timestamp"
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - Join Slack",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"join_slack\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"email\": \"user@example.com\",\n    \"timestamp\": \"2025-12-10T12:00:00Z\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Joins Slack workspace. Required fields: user_id, email, timestamp"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Error Cases",
+			"item": [
+				{
+					"name": "Create User - Duplicate Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"existing@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						},
+						"description": "Attempts to create a user with an email that already exists. Should return 409 Conflict."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - Missing Required Fields",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"iq_test\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"test_id\": \"iq-1\",\n    \"score\": 85\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Attempts to complete IQ Test without timestamp. Should return 400 Bad Request with missing fields error."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - Invalid Task ID",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"non_existent_task\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Attempts to complete a non-existent task. Should return 400 Bad Request."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Task - Task Order Violation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"task_id\": \"perform_interview\",\n  \"task_payload\": {\n    \"user_id\": \"{{userId}}\",\n    \"interview_date\": \"2025-12-15T10:00:00Z\",\n    \"interviewer_id\": \"int-1\",\n    \"decision\": \"passed_interview\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/steps/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["steps", "complete"]
+						},
+						"description": "Attempts to perform interview before scheduling it. Should return 400 Bad Request with task order violation error."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Status - Non-existent User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/99999/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "99999", "status"]
+						},
+						"description": "Attempts to get status for a non-existent user. Should return 404 Not Found."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
+

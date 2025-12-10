@@ -1,0 +1,139 @@
+{
+  "id": "admissions_v1",
+  "name": "Admissions Flow",
+  "steps": [
+    {
+      "id": "step_personal",
+      "name": "Personal Details Form",
+      "tasks": [
+        {
+          "id": "personal_details",
+          "name": "Personal Details Form",
+          "requiredFields": ["user_id", "first_name", "last_name", "email", "timestamp"],
+          "passCondition": {
+            "type": "always"
+          },
+          "visibilityCondition": {
+            "type": "always"
+          }
+        }
+      ]
+    },
+    {
+      "id": "step_iq",
+      "name": "IQ Test",
+      "tasks": [
+        {
+          "id": "iq_test",
+          "name": "IQ Test",
+          "requiredFields": ["user_id", "test_id", "score", "timestamp"],
+          "passCondition": {
+            "type": "scoreGreaterThan",
+            "field": "score",
+            "threshold": 75.0
+          },
+          "visibilityCondition": {
+            "type": "always"
+          },
+          "redoable": false
+        }
+      ]
+    },
+    {
+      "id": "step_interview",
+      "name": "Interview",
+      "tasks": [
+        {
+          "id": "schedule_interview",
+          "name": "Schedule Interview",
+          "requiredFields": ["user_id", "interview_date"],
+          "passCondition": {
+            "type": "always"
+          },
+          "visibilityCondition": {
+            "type": "always"
+          },
+          "redoable": false
+        },
+        {
+          "id": "perform_interview",
+          "name": "Perform Interview",
+          "requiredFields": ["user_id", "interview_date", "interviewer_id", "decision"],
+          "passCondition": {
+            "type": "equals",
+            "field": "decision",
+            "value": "passed_interview"
+          },
+          "visibilityCondition": {
+            "type": "always"
+          },
+          "redoable": false
+        }
+      ]
+    },
+    {
+      "id": "step_sign",
+      "name": "Sign Contract",
+      "tasks": [
+        {
+          "id": "upload_identification_document",
+          "name": "Upload Identification Document",
+          "requiredFields": ["user_id", "passport_number", "timestamp"],
+          "passCondition": {
+            "type": "always"
+          },
+          "visibilityCondition": {
+            "type": "always"
+          }
+        },
+        {
+          "id": "sign_contract",
+          "name": "Sign Contract",
+          "requiredFields": ["user_id", "timestamp"],
+          "passCondition": {
+            "type": "always"
+          },
+          "visibilityCondition": {
+            "type": "always"
+          }
+        }
+      ]
+    },
+    {
+      "id": "step_payment",
+      "name": "Payment",
+      "tasks": [
+        {
+          "id": "payment",
+          "name": "Payment",
+          "requiredFields": ["user_id", "payment_id", "timestamp"],
+          "passCondition": {
+            "type": "always"
+          },
+          "visibilityCondition": {
+            "type": "always"
+          },
+          "redoable": false
+        }
+      ]
+    },
+    {
+      "id": "step_slack",
+      "name": "Join Slack",
+      "tasks": [
+        {
+          "id": "join_slack",
+          "name": "Join Slack",
+          "requiredFields": ["user_id", "email", "timestamp"],
+          "passCondition": {
+            "type": "always"
+          },
+          "visibilityCondition": {
+            "type": "always"
+          }
+        }
+      ]
+    }
+  ]
+}
+
