@@ -351,8 +351,10 @@ public class FlowService {
                 .mapToInt(step -> step.tasks().size())
                 .sum();
         
-        var user = userService.getUser(userId);
-        int completedTasks = user != null ? user.getCompletedTasks().size() : 0;
+        // User is guaranteed to exist here since computeCurrentPosition() calls snapshot()
+        // which throws UserNotFoundException for non-existent users
+        User user = userService.getUser(userId);
+        int completedTasks = user.getCompletedTasks().size();
 
         log.info("Current position: userId={}, step={}, task={}, progress={}/{}", 
                 userId, position.step().id(), position.task().getId(), completedTasks, totalTasks);

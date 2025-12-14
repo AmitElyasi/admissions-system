@@ -191,17 +191,15 @@ public class FullFlowIntegrationTest {
     }
 
     @Test
-    void getCurrentPosition_nonexistentUser_returnsInProgress() {
-        // Non-existent user still gets a position (first task) since visibility is "always"
+    void getCurrentPosition_nonexistentUser_returnsNotFound() {
+        // Non-existent users should return 404
         ResponseEntity<Map<String, Object>> positionResp = restTemplate.exchange(
                 "/users/99999/current",
                 HttpMethod.GET,
                 null,
                 MAP_TYPE
         );
-        assertEquals(HttpStatus.OK, positionResp.getStatusCode());
-        // The system treats non-existent users as new users and shows them the first task
-        assertEquals("in_progress", positionResp.getBody().get("status"));
+        assertEquals(HttpStatus.NOT_FOUND, positionResp.getStatusCode());
     }
 
     @Test

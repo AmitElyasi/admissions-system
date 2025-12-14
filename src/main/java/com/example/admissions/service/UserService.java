@@ -1,6 +1,7 @@
 package com.example.admissions.service;
 
 import com.example.admissions.exception.DuplicateUserException;
+import com.example.admissions.exception.UserNotFoundException;
 import com.example.admissions.model.TaskResult;
 import com.example.admissions.model.User;
 import com.example.admissions.model.UserStateSnapshot;
@@ -61,7 +62,9 @@ public class UserService {
      */
     public void addTaskResult(String userId, String taskId, boolean passed, Map<String,Object> payload) {
         User u = users.get(userId);
-        if (u == null) return;
+        if (u == null) {
+            throw new UserNotFoundException(userId);
+        }
         
         Instant timestamp = parseTimestampFromPayload(payload);
         TaskResult tr = new TaskResult(taskId, passed, timestamp, payload);
@@ -121,7 +124,9 @@ public class UserService {
 
     public UserStateSnapshot snapshot(String userId) {
         User u = users.get(userId);
-        if (u == null) return new UserStateSnapshot(userId, Map.of());
+        if (u == null) {
+            throw new UserNotFoundException(userId);
+        }
         return new UserStateSnapshot(userId, u.getCompletedTasks());
     }
 }

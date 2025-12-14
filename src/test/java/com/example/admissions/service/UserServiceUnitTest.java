@@ -1,6 +1,7 @@
 package com.example.admissions.service;
 
 import com.example.admissions.exception.DuplicateUserException;
+import com.example.admissions.exception.UserNotFoundException;
 import com.example.admissions.model.TaskResult;
 import com.example.admissions.model.User;
 import com.example.admissions.model.UserStateSnapshot;
@@ -103,9 +104,9 @@ class UserServiceUnitTest {
     }
 
     @Test
-    void addTaskResult_nonexistentUser_doesNotThrow() {
-        // Should not throw exception, just silently return
-        assertDoesNotThrow(() -> {
+    void addTaskResult_nonexistentUser_throwsException() {
+        // Should throw exception for non-existent users
+        assertThrows(UserNotFoundException.class, () -> {
             userService.addTaskResult("99999", "task1", true, Map.of());
         });
     }
@@ -153,12 +154,11 @@ class UserServiceUnitTest {
     }
 
     @Test
-    void snapshot_nonexistentUser_returnsEmptySnapshot() {
-        UserStateSnapshot snapshot = userService.snapshot("99999");
-        
-        assertNotNull(snapshot);
-        assertEquals("99999", snapshot.userId());
-        assertTrue(snapshot.completedTasks().isEmpty());
+    void snapshot_nonexistentUser_throwsException() {
+        // Should throw exception for non-existent users
+        assertThrows(UserNotFoundException.class, () -> {
+            userService.snapshot("99999");
+        });
     }
 
     @Test

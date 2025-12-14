@@ -360,14 +360,11 @@ class FlowServiceUnitTest {
     }
 
     @Test
-    void getCurrentPositionResponse_nonexistentUser_returnsInProgress() {
-        // Non-existent user still gets a position (first task) since visibility is "always"
-        CurrentPositionResponse response = flowService.getCurrentPositionResponse("99999");
-        
-        assertNotNull(response);
-        assertEquals("99999", response.userId());
-        // The system treats non-existent users as new users and shows them the first task
-        assertEquals("in_progress", response.status());
+    void getCurrentPositionResponse_nonexistentUser_throwsException() {
+        // Non-existent users should throw exception
+        assertThrows(UserNotFoundException.class, () -> {
+            flowService.getCurrentPositionResponse("99999");
+        });
     }
 
     @Test
