@@ -13,6 +13,7 @@ import com.example.admissions.model.Flow;
 import com.example.admissions.model.Step;
 import com.example.admissions.model.Task;
 import com.example.admissions.model.TaskResult;
+import com.example.admissions.model.User;
 import com.example.admissions.model.UserStateSnapshot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -115,11 +116,25 @@ public class FlowService {
      *   <li><b>accepted</b>: all visible steps have all their tasks completed and passed</li>
      *   <li><b>in_progress</b>: otherwise (including failed redoable tasks that can be retried)</li>
      * </ul>
+     * 
+     * Optimized: Returns cached final status if user is already accepted/rejected.
      *
      * @param userId the user identifier
      * @return the status string: "accepted", "rejected", or "in_progress"
      */
     public String userStatus(String userId) {
+        User user = userService.getUser(userId);
+        if (user == null) {
+            throw new UserNotFoundException(userId);
+        }
+        
+        // Return cached final status if available (optimization for accepted/rejected users)
+        String cachedStatus = user.getFinalStatus();
+        if (cachedStatus != null) {
+            return cachedStatus;
+        }
+        
+        // Calculate status for in_progress users
         UserStateSnapshot snapshot = userService.snapshot(userId);
         List<Step> visibleSteps = getVisibleStepsForUser(userId);
         Map<String, TaskResult> completedTasks = snapshot.completedTasks();
@@ -129,7 +144,9 @@ public class FlowService {
             for (Task task : step.tasks()) {
                 TaskResult result = completedTasks.get(task.getId());
                 if (result != null && !result.passed() && !task.isRedoable()) {
-                    return "rejected";
+                    String status = "rejected";
+                    user.setFinalStatus(status);
+                    return status;
                 }
             }
         }
@@ -142,7 +159,13 @@ public class FlowService {
                     return result != null && result.passed();
                 });
 
-        return allCompleted ? "accepted" : "in_progress";
+        if (allCompleted) {
+            String status = "accepted";
+            user.setFinalStatus(status);
+            return status;
+        }
+        
+        return "in_progress";
     }
 
     /**
