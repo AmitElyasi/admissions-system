@@ -109,9 +109,9 @@ public class FlowService {
     /**
      * Determines the user's acceptance status in the flow.
      * <ul>
-     *   <li><b>rejected</b>: any completed task explicitly failed</li>
+     *   <li><b>rejected</b>: any non-redoable task explicitly failed</li>
      *   <li><b>accepted</b>: all visible steps have all their tasks completed and passed</li>
-     *   <li><b>in_progress</b>: otherwise</li>
+     *   <li><b>in_progress</b>: otherwise (including failed redoable tasks that can be retried)</li>
      * </ul>
      *
      * @param userId the user identifier
@@ -122,11 +122,14 @@ public class FlowService {
         List<Step> visibleSteps = getVisibleStepsForUser(userId);
         Map<String, TaskResult> completedTasks = snapshot.completedTasks();
 
-        // Check if any task failed
-        boolean anyFailed = completedTasks.values().stream()
-                .anyMatch(result -> !result.passed());
-        if (anyFailed) {
-            return "rejected";
+        // Check if any non-redoable task failed
+        for (Step step : flow.steps()) {
+            for (Task task : step.tasks()) {
+                TaskResult result = completedTasks.get(task.getId());
+                if (result != null && !result.passed() && !task.isRedoable()) {
+                    return "rejected";
+                }
+            }
         }
 
         // Check if all visible tasks are completed and passed

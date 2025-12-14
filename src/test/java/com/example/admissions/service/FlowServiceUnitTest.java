@@ -123,6 +123,20 @@ class FlowServiceUnitTest {
     }
 
     @Test
+    void userStatus_userWithFailedRedoableTask_returnsInProgress() {
+        User user = userService.createUser("redoaable@example.com");
+        
+        // Directly add a failed task result for a redoable task (personal_details is redoable by default)
+        // This simulates a scenario where a redoable task could fail (even though current flow doesn't have such tasks)
+        Map<String, Object> payload = Map.of("user_id", user.getId(), "timestamp", "now");
+        userService.addTaskResult(user.getId(), "personal_details", false, payload);
+        
+        // Status should be in_progress, not rejected, because the task is redoable
+        String status = flowService.userStatus(user.getId());
+        assertEquals("in_progress", status);
+    }
+
+    @Test
     void getUserStatusResponse_existingUser_returnsStatus() {
         User user = userService.createUser("statusresp@example.com");
         UserStatusResponse response = flowService.getUserStatusResponse(user.getId());
