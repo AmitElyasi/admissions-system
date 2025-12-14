@@ -14,6 +14,7 @@ import com.example.admissions.model.Step;
 import com.example.admissions.model.Task;
 import com.example.admissions.model.TaskResult;
 import com.example.admissions.model.UserStateSnapshot;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,6 +23,7 @@ import java.util.*;
  * Service for managing flow-related operations.
  * Handles computation of current position, visibility, and user status in the admissions flow.
  */
+@Slf4j
 @Service
 public class FlowService {
     private final Flow flow;
@@ -155,7 +157,11 @@ public class FlowService {
         if (userService.getUser(userId) == null) {
             throw new UserNotFoundException(userId);
         }
-        return new UserStatusResponse(userStatus(userId));
+        String status = userStatus(userId);
+        if ("accepted".equals(status) || "rejected".equals(status)) {
+            log.info("User status: userId={}, status={}", userId, status);
+        }
+        return new UserStatusResponse(status);
     }
 
     /**
@@ -191,6 +197,7 @@ public class FlowService {
         userService.addTaskResult(userId, task.getId(), passed, taskPayload);
         
         String userStatus = userStatus(userId);
+        log.info("Task completed: userId={}, taskId={}, passed={}, status={}", userId, task.getId(), passed, userStatus);
         return new CompleteStepResponse(
                 userId, 
                 task.getName(), 
@@ -311,6 +318,7 @@ public class FlowService {
         Optional<CurrentPosition> positionOpt = computeCurrentPosition(userId);
         
         if (positionOpt.isEmpty()) {
+            log.info("Current position: userId={}, status=completed", userId);
             return CurrentPositionResponse.completed(userId);
         }
 
@@ -323,6 +331,9 @@ public class FlowService {
         var user = userService.getUser(userId);
         int completedTasks = user != null ? user.getCompletedTasks().size() : 0;
 
+        log.info("Current position: userId={}, step={}, task={}, progress={}/{}", 
+                userId, position.step().id(), position.task().getId(), completedTasks, totalTasks);
+        
         return new CurrentPositionResponse(
                 userId,
                 "in_progress",

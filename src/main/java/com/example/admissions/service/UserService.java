@@ -4,6 +4,7 @@ import com.example.admissions.exception.DuplicateUserException;
 import com.example.admissions.model.TaskResult;
 import com.example.admissions.model.User;
 import com.example.admissions.model.UserStateSnapshot;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Simple in-memory user store and helper methods.
  */
+@Slf4j
 @Service
 public class UserService {
     private final Map<String, User> users = new ConcurrentHashMap<>();
@@ -41,6 +43,7 @@ public class UserService {
         User u = new User(userId, email);
         users.put(userId, u);
         emailToId.put(normalizedEmail, userId);
+        log.info("User created: userId={}, email={}", userId, email);
         return u;
     }
 
